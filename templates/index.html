@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>GenAI Quiz Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #f7f7f7;
+        }
+
+        form {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 8px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin-bottom: 20px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>📘 GenAI Quiz Generator</h1>
+    <form method="POST" enctype="multipart/form-data">
+        <label>Upload PDF:</label><br>
+        <input type="file" name="pdf_file" required><br><br>
+
+        <label>Start Page:</label><br>
+        <input type="number" name="start_page" min="1" required><br><br>
+
+        <label>End Page:</label><br>
+        <input type="number" name="end_page" min="1" required><br><br>
+
+        <label>Number of Questions (1–10):</label><br>
+        <input type="number" name="num_questions" min="1" max="10" required><br><br>
+
+        <button type="submit">Generate Quiz</button>
+    </form>
+
+
+    {% if quiz %}
+    <h2>📝 Generated Quiz</h2>
+    <div id="quiz-block">
+        {% set questions = quiz.split('\nQ') if quiz.startswith('Q') else quiz.split('\nQ') %}
+        {% for q in questions %}
+            {% if q.strip() %}
+                {% set qlines = q.split('\n') %}
+                <div class="question-block" style="background:#fff;padding:10px;margin-bottom:15px;border-radius:8px;box-shadow:0 0 4px #ddd;">
+                    {% for line in qlines %}
+                        {% if line.startswith('Answer:') %}
+                            <div style="margin-top:8px;">
+                                <button type="button" onclick="this.nextElementSibling.style.display='block';this.style.display='none'">Reveal Answer</button>
+                                <span style="display:none;font-weight:bold;color:#1a8917;">{{ line }}</span>
+                            </div>
+                        {% else %}
+                            <div>{{ line }}</div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if pdf_text %}
+    <h3>📄 Extracted Text Used:</h3>
+    <pre style="max-height: 300px; overflow-y: scroll;">{{ pdf_text }}</pre>
+    {% endif %}
+</body>
+
+</html>
